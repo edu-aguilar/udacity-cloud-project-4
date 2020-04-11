@@ -2,6 +2,7 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 import { DynamoDB } from 'aws-sdk'
+import { getUserId } from '../utils'
 
 const docClient = new DynamoDB.DocumentClient()
 const todosTable = process.env.TODOS_TABLE
@@ -9,9 +10,7 @@ const todosIdIndex = process.env.TODOS_ID_INDEX
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   // TODO: Get all TODO items for a current user
-
-  // sacar userID del JWT de la cabecera auth
-  const userId = '12345'
+  const userId: string = getUserId(event)
 
   const result = await docClient.query({
     TableName : todosTable,
