@@ -4,6 +4,8 @@ service:
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 package:
   individually: true
@@ -65,6 +67,7 @@ functions:
           authorizer: Auth
           path: todos
           cors: true
+          reqValidatorName: RequestBodyValidator
           documentation:
             summary: Create a new ToDo
             description: Create a new ToDo
@@ -98,6 +101,16 @@ functions:
 
 resources:
   Resources:
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false
+
     TodosDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
