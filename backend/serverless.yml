@@ -43,8 +43,8 @@ custom:
 
 functions:
 
-  # Auth:
-  #   handler: src/lambda/auth/auth0Authorizer.handler
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
 
   # TODO: Configure this function
   GetTodos:
@@ -52,6 +52,7 @@ functions:
     events:
       - http:
           method: get
+          authorizer: Auth
           path: todos
           cors: true
 
@@ -61,6 +62,7 @@ functions:
     events:
       - http:
           method: post
+          authorizer: Auth
           path: todos
           cors: true
           documentation:
