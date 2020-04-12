@@ -23,6 +23,19 @@ export class TodosAccess {
     return todos as TodoItem[]
   }
 
+  async getTodoById(todoId: string): Promise<TodoItem> {
+    const result = await this.docClient.query({
+      TableName : this.todosTable,
+      KeyConditionExpression: 'todoId = :todoId',
+      ExpressionAttributeValues: {
+          ':todoId': todoId
+      }
+    }).promise()
+
+    const todo = result.Items[0]
+    return todo as TodoItem
+  }
+
   async createTodo(todo: TodoItem): Promise<TodoItem> {
     await this.docClient.put({
       TableName: this.todosTable,
