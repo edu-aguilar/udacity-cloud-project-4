@@ -7,6 +7,7 @@ import { v4 as generateRandomUUID } from "uuid";
 const todosAccess = new TodosAccess()
 
 export async function getTodosByUserId(userId: string): Promise<TodoItem[]> {
+
   return todosAccess.getTodosByUserId(userId)
 }
 
@@ -21,5 +22,9 @@ export async function createTodo(todo: CreateTodoRequest, userId: string) {
   }
 
   return todosAccess.createTodo(newTodoItem)
+}
 
+export async function deleteTodo(userId: string, todoId: string) {
+
+  return todosAccess.deleteTodo(userId, todoId)
 }
