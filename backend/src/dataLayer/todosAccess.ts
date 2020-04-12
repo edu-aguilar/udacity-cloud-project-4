@@ -56,8 +56,8 @@ export class TodosAccess {
     }).promise()
   }
 
-  async updateTodoFromUser(todoId: string, userId: string, updatedTodo: UpdateTodoRequest) {
-    await this.docClient.update({
+  async updateTodoFromUser(todoId: string, userId: string, updatedTodo: UpdateTodoRequest): Promise<TodoItem> {
+    const result = await this.docClient.update({
       TableName : this.todosTable,
       Key: {
         "todoId": todoId,
@@ -74,5 +74,7 @@ export class TodosAccess {
       },
       ReturnValues:"UPDATED_NEW"
     }).promise()
+
+    return result.Attributes as TodoItem
   }
 }

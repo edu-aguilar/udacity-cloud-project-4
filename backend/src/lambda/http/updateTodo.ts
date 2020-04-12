@@ -12,7 +12,21 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const updateTodoReq: UpdateTodoRequest = JSON.parse(event.body)
 
   // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-  await updateTodoFromUser(todoId, userId, updateTodoReq)
+  const updatedTodo = await updateTodoFromUser(todoId, userId, updateTodoReq)
+
+  console.log('updated Todo: ', JSON.stringify(updatedTodo))
+
+  if (Object.keys(updatedTodo).length === 0) {
+    return {
+      statusCode: 404,
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify({
+        message: 'ToDo not found'
+      })
+    }
+  }
 
   return {
     statusCode: 204,
