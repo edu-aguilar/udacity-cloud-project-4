@@ -4,6 +4,7 @@ import { CreateTodoRequest } from '../requests/CreateTodoRequest';
 import { S3 } from 'aws-sdk'
 
 import { v4 as generateRandomUUID } from "uuid"
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 
 const bucketName = process.env.TODOS_IMAGES_S3_BUCKET
 const urlExpiration = parseInt(process.env.SIGNED_URL_EXPIRATION)
@@ -60,6 +61,11 @@ export async function generateSignedUrl(todo: TodoItem) {
   await updateExistingTodo(todoToUpdate)
 
   return signedUrl
+}
+
+export async function updateTodoFromUser(todoId: string, userId: string, updatedTodo: UpdateTodoRequest) {
+  
+  return todosAccess.updateTodoFromUser(todoId, userId, updatedTodo)
 }
 
 async function updateExistingTodo(todoToUpdate: TodoItem) {

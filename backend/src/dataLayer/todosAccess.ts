@@ -1,6 +1,7 @@
 import { TodoItem } from '../models/TodoItem'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DynamoDB } from 'aws-sdk';
+import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 
 export class TodosAccess {
 
@@ -52,6 +53,26 @@ export class TodosAccess {
         "userId": userId,
         "todoId": todoId
       }
+    }).promise()
+  }
+
+  async updateTodoFromUser(todoId: string, userId: string, updatedTodo: UpdateTodoRequest) {
+    await this.docClient.update({
+      TableName : this.todosTable,
+      Key: {
+        "todoId": todoId,
+        "userId": userId
+      },
+      UpdateExpression: "set #n = :name, dueDate = :dueDate, done = :done",
+      ExpressionAttributeValues: {
+        ":name": updatedTodo.name,
+        ":dueDate": updatedTodo.dueDate,
+        ":done": updatedTodo.done
+      },
+      ExpressionAttributeNames: {
+        "#n": 'name'
+      },
+      ReturnValues:"UPDATED_NEW"
     }).promise()
   }
 }
