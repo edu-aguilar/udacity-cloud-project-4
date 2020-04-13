@@ -1,4 +1,4 @@
-import * as winston from 'winston'
+import { createLogger as _createLogger, format, transports } from 'winston'
 
 /**
  * Create a logger instance to write log messages in JSON format.
@@ -6,12 +6,12 @@ import * as winston from 'winston'
  * @param loggerName - a name of a logger that will be added to all messages
  */
 export function createLogger(loggerName: string) {
-  return winston.createLogger({
+  return _createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: format.json(),
     defaultMeta: { name: loggerName },
     transports: [
-      new winston.transports.Console()
+      new transports.Console()
     ]
   })
 }
