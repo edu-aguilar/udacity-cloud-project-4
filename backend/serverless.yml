@@ -1,14 +1,17 @@
 service:
   name: serverless-todo-app
 
+
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-reqvalidator-plugin
   - serverless-aws-documentation
 
+
 package:
   individually: true
+
 
 provider:
   name: aws
@@ -23,22 +26,6 @@ provider:
     TODOS_IMAGES_S3_BUCKET: todos-images-s3-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamoDB:PutItem
-        - dynamoDB:UpdateItem
-        - dynamoDB:DeleteItem
-        - dynamodb:Query
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-      Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_ID_INDEX}
-    - Effect: Allow
-      Action:
-        - s3:PutObject
-      Resource: arn:aws:s3:::${self:provider.environment.TODOS_IMAGES_S3_BUCKET}/*
 
 custom:
   documentation:
@@ -55,10 +42,12 @@ custom:
         contentType: application/json
         schema: ${file(src/requests/update-todo-request.json)}
 
+
 functions:
 
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
+
 
   # TODO: Configure this function
   GetTodos:
@@ -69,6 +58,12 @@ functions:
           authorizer: Auth
           path: todos
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_ID_INDEX}
+
 
   # TODO: Configure this function
   CreateTodo:
@@ -85,6 +80,11 @@ functions:
             description: Create a new ToDo
             requestModels:
               'application/json': CreateTodoRequest
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamoDB:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
 
   # TODO: Configure this function
@@ -102,6 +102,12 @@ functions:
             description: Update existing ToDo
             requestModels:
               'application/json': UpdateTodoRequest
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamoDB:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
 
   # TODO: Configure this function
   DeleteTodo:
@@ -112,6 +118,12 @@ functions:
           authorizer: Auth
           path: todos/{todoId}
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamoDB:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+
 
   # TODO: Configure this function
   GenerateUploadUrl:
@@ -122,6 +134,17 @@ functions:
           authorizer: Auth
           path: todos/{todoId}/attachment
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamoDB:Query
+          - dynamoDB:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: arn:aws:s3:::${self:provider.environment.TODOS_IMAGES_S3_BUCKET}/*
+  
 
 resources:
   Resources:
